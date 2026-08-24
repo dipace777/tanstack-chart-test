@@ -6,7 +6,7 @@ import { portal } from '@tanstack/charts/tooltip/portal'
 
 export const BAR_INSET = 10
 export const BAR_MAX_THICKNESS = 78
-export const CHART_HEIGHT = 520
+export const CHART_HEIGHT = 600
 export const CHART_INITIAL_WIDTH = 960
 
 export type PlatformName = 'Facebook' | 'Instagram' | 'LinkedIn' | 'X'
@@ -174,7 +174,7 @@ export const directEngagementChart = defineChart({
       tickLabels: { fontSize: 12, opacity: 0.7 },
     },
   },
-  margin: { top: 52, right: 12, bottom: 40 },
+  margin: { top: 132, right: 12, bottom: 40 },
   clip: false,
   focus: 'group-x',
   tooltip: {

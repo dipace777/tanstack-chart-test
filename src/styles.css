@@ -38,10 +38,44 @@ body {
   box-shadow: 0 24px 80px color-mix(in srgb, black 45%, transparent);
 }
 
-.engagement-header {
+.engagement-chart-frame {
+  position: relative;
+  overflow: visible;
+}
+
+.engagement-connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.engagement-total-bubble {
+  position: absolute;
+  z-index: 1;
   display: grid;
-  gap: 6px;
-  margin-bottom: 8px;
+  justify-items: center;
+  gap: 4px;
+  min-width: 280px;
+  padding: 18px 40px 16px;
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, #0b1220 92%, white 8%);
+  box-shadow:
+    0 0 0 8px color-mix(in srgb, #0b1220 70%, transparent),
+    0 18px 40px color-mix(in srgb, black 32%, transparent);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.engagement-total-bubble .engagement-kicker {
+  color: #94a3b8;
+}
+
+.engagement-total-bubble .engagement-total {
+  font-size: 40px;
 }
 
 .engagement-kicker,
@@ -59,23 +93,9 @@ body {
 .engagement-total {
   margin: 0;
   color: #f8fafc;
-  font-size: clamp(32px, 5vw, 44px);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1.1;
-}
-
-.engagement-subtitle {
-  margin: 0;
-  color: #94a3b8;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.engagement-chart-frame {
-  position: relative;
-  margin-top: 8px;
-  overflow: visible;
 }
 
 .engagement-axis {

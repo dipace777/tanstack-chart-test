@@ -32,15 +32,22 @@ interface SegmentAnchor {
   height: number
 }
 
+interface OverlayLayout {
+  plotX: number
+  plotY: number
+  plotWidth: number
+  anchors: readonly BarAnchor[]
+}
+
 const MIN_CHIP_HEIGHT = 26
 
 function paintedBarWidth(bandwidth: number) {
   return Math.min(Math.max(0, bandwidth - BAR_INSET * 2), BAR_MAX_THICKNESS)
 }
 
-function readAnchors(
+function readLayout(
   context: ChartRenderContext<EngagementReaction, string, number>,
-): BarAnchor[] | null {
+): OverlayLayout | null {
   const x = context.scene.scales.x
   const y = context.scene.scales.y
   if (!x || !y || x.type === 'none' || y.type === 'none') return null
@@ -49,7 +56,7 @@ function readAnchors(
   const bottom = y.map(0)
   if (!Number.isFinite(bottom)) return null
 
-  return platforms.map((platform) => {
+  const anchors = platforms.map((platform) => {
     const centerX = x.map(platform.platform)
     let cumulative = 0
     const segments = platform.reactions.map((row) => {
@@ -75,6 +82,23 @@ function readAnchors(
       segments,
     }
   })
+
+  return {
+    plotX: context.scene.chart.x,
+    plotY: context.scene.chart.y,
+    plotWidth: context.scene.chart.width,
+    anchors,
+  }
+}
+
+function sameLayout(left: OverlayLayout | null, right: OverlayLayout) {
+  if (!left) return false
+  return (
+    Math.round(left.plotX) === Math.round(right.plotX) &&
+    Math.round(left.plotY) === Math.round(right.plotY) &&
+    Math.round(left.plotWidth) === Math.round(right.plotWidth) &&
+    sameAnchors(left.anchors, right.anchors)
+  )
 }
 
 function sameAnchors(left: readonly BarAnchor[], right: readonly BarAnchor[]) {
@@ -130,16 +154,16 @@ function EngagementTooltip({
 }
 
 export function DirectEngagementChart() {
-  const [anchors, setAnchors] = useState<readonly BarAnchor[]>([])
-  const anchorsRef = useRef(anchors)
-  anchorsRef.current = anchors
+  const [layout, setLayout] = useState<OverlayLayout | null>(null)
+  const layoutRef = useRef(layout)
+  layoutRef.current = layout
 
   const onRender = useCallback(
     (context: ChartRenderContext<EngagementReaction, string, number>) => {
-      const next = readAnchors(context)
+      const next = readLayout(context)
       if (!next) return
-      if (sameAnchors(anchorsRef.current, next)) return
-      setAnchors(next)
+      if (sameLayout(layoutRef.current, next)) return
+      setLayout(next)
     },
     [],
   )
@@ -153,18 +177,13 @@ export function DirectEngagementChart() {
       .join(', ')
   }, [])
 
+  const anchors = layout?.anchors ?? []
+  const bubbleX = layout ? layout.plotX + layout.plotWidth / 2 : 0
+  const bubbleTop = 18
+  const bubbleBottom = 108
+
   return (
     <section className="engagement-card">
-      <header className="engagement-header">
-        <p className="engagement-kicker">Direct engagement</p>
-        <h1 className="engagement-total">
-          {numberFormat.format(TOTAL_ENGAGEMENT)}
-        </h1>
-        <p className="engagement-subtitle">
-          Reactions, comments, and shares across Facebook, Instagram, LinkedIn, and X
-        </p>
-      </header>
-
       <div className="engagement-chart-frame">
         <Chart
           definition={directEngagementChart}
@@ -176,6 +195,35 @@ export function DirectEngagementChart() {
           onRender={onRender}
           renderTooltipBody={({ points }) => <EngagementTooltip points={points} />}
         />
+
+        {layout ? (
+          <svg className="engagement-connectors" aria-hidden="true">
+            {anchors.map((anchor) => (
+              <line
+                key={anchor.platform}
+                x1={bubbleX}
+                y1={bubbleBottom}
+                x2={anchor.centerX}
+                y2={anchor.top - 8}
+                stroke="#64748b"
+                strokeOpacity="0.45"
+                strokeWidth="1.25"
+              />
+            ))}
+          </svg>
+        ) : null}
+
+        {layout ? (
+          <div
+            className="engagement-total-bubble"
+            style={{ left: bubbleX, top: bubbleTop }}
+          >
+            <p className="engagement-kicker">Direct engagement</p>
+            <p className="engagement-total">
+              {numberFormat.format(TOTAL_ENGAGEMENT)}
+            </p>
+          </div>
+        ) : null}
 
         {anchors.map((anchor) => (
           <div
