@@ -13,7 +13,13 @@ export const CHART_INITIAL_WIDTH = 960
 export const BADGE_CLEARANCE = 52
 
 export type ColorMode = 'light' | 'dark'
-export type PlatformName = 'Facebook' | 'Instagram' | 'LinkedIn' | 'X'
+export type PlatformName =
+  | 'Facebook'
+  | 'Instagram'
+  | 'TikTok'
+  | 'Threads'
+  | 'LinkedIn'
+  | 'X'
 
 export interface EngagementReaction {
   id: string
@@ -36,12 +42,16 @@ const PLATFORM_TONES = {
   dark: {
     Facebook: '#6F8FCE',
     Instagram: '#C47A93',
+    TikTok: '#5FB8C4',
+    Threads: '#A48FCB',
     LinkedIn: '#5B8AA8',
     X: '#9AA3B2',
   },
   light: {
     Facebook: '#4E6FB0',
     Instagram: '#A24E6C',
+    TikTok: '#2E7D89',
+    Threads: '#6F5A96',
     LinkedIn: '#3D7394',
     X: '#5B6573',
   },
@@ -112,6 +122,24 @@ const PLATFORM_ITEMS = [
       ['comment', 'Comments', '💬', 26],
       ['share', 'Shares', '📤', 13],
       ['save', 'Saves', '🔖', 7],
+    ],
+  ],
+  [
+    'TikTok',
+    [
+      ['like', 'Likes', '❤️', 236],
+      ['comment', 'Comments', '💬', 88],
+      ['share', 'Shares', '📤', 64],
+      ['save', 'Saves', '🔖', 42],
+    ],
+  ],
+  [
+    'Threads',
+    [
+      ['like', 'Likes', '❤️', 148],
+      ['reply', 'Replies', '💬', 72],
+      ['repost', 'Reposts', '🔁', 38],
+      ['quote', 'Quotes', '📝', 22],
     ],
   ],
   [
@@ -224,8 +252,8 @@ export function createDirectEngagementChart(mode: ColorMode) {
       scale: () =>
         scaleBand<string>()
           .domain(platforms.map((row) => row.platform))
-          .paddingInner(0.28)
-          .paddingOuter(0.12),
+          .paddingInner(0.16)
+          .paddingOuter(0.08),
       axis: {
         line: false,
         ticks: { size: 0 },
