@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #070b14;
+  color: #e5e7eb;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+.engagement-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+}
+
+.engagement-card {
+  width: min(100%, 980px);
+  padding: 28px 28px 24px;
+  border: 1px solid color-mix(in srgb, white 8%, transparent);
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, white 4%, transparent), transparent 28%),
+    #0b1220;
+  box-shadow: 0 24px 80px color-mix(in srgb, black 45%, transparent);
+}
+
+.engagement-header {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.engagement-kicker,
+.engagement-tooltip-kicker,
+.engagement-axis-label,
+.engagement-badge span {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.engagement-total {
+  margin: 0;
+  color: #f8fafc;
+  font-size: clamp(32px, 5vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.engagement-subtitle {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.engagement-chart-frame {
+  position: relative;
+  margin-top: 8px;
+  overflow: visible;
+}
+
+.engagement-axis {
+  pointer-events: none;
+}
+
+.engagement-chart {
+  width: 100%;
+  color: #e5e7eb;
+  --ts-chart-tooltip-background: #101828;
+  --ts-chart-tooltip-color: #e5e7eb;
+  --ts-chart-tooltip-border: 1px solid color-mix(in srgb, white 12%, transparent);
+  --ts-chart-tooltip-border-radius: 16px;
+  --ts-chart-tooltip-shadow: 0 18px 48px color-mix(in srgb, black 42%, transparent);
+  --ts-chart-tooltip-padding: 12px;
+  --ts-chart-tooltip-max-width: 260px;
+}
+
+.engagement-chart .ts-chart {
+  overflow: visible;
+}
+
+.engagement-overlay {
+  position: absolute;
+  z-index: 2;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.engagement-badge {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  display: grid;
+  justify-items: center;
+  transform: translateX(-50%);
+  padding: 6px 10px;
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, #0b1220 88%, white 6%);
+  box-shadow: 0 8px 24px color-mix(in srgb, black 28%, transparent);
+}
+
+.engagement-badge strong {
+  color: #f8fafc;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.engagement-chips {
+  position: relative;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.engagement-chip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.engagement-axis-label {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transform: translateX(-50%);
+  color: #e5e7eb;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  pointer-events: none;
+}
+
+.engagement-axis-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.engagement-tooltip-body {
+  display: grid;
+  gap: 8px;
+  min-width: 198px;
+}
+
+.engagement-tooltip-kicker {
+  color: #94a3b8;
+}
+
+.engagement-tooltip-total {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.engagement-tooltip-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 0 0;
+  border-top: 1px solid color-mix(in srgb, white 10%, transparent);
+  list-style: none;
+}
+
+.engagement-tooltip-list li {
+  display: grid;
+  grid-template-columns: 8px 18px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+.engagement-tooltip-list li.is-active {
+  color: #f8fafc;
+  font-weight: 650;
+}
+
+.engagement-tooltip-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.engagement-tooltip-count {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 800px) {
+  .engagement-card {
+    padding: 20px 16px 16px;
+  }
+}
