@@ -1,4 +1,4 @@
-import { barY, defineChart } from '@tanstack/charts'
+import { bandX, barY, defineChart, whenFocused } from '@tanstack/charts'
 import { scaleBand } from '@tanstack/charts/scales/band'
 import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { tooltip } from '@tanstack/charts/tooltip'
@@ -6,8 +6,11 @@ import { portal } from '@tanstack/charts/tooltip/portal'
 
 export const BAR_INSET = 10
 export const BAR_MAX_THICKNESS = 78
+export const BAR_RADIUS = 10
+export const BAR_GAP = 2.5
 export const CHART_HEIGHT = 600
 export const CHART_INITIAL_WIDTH = 960
+export const BADGE_CLEARANCE = 52
 
 export type ColorMode = 'light' | 'dark'
 export type PlatformName = 'Facebook' | 'Instagram' | 'LinkedIn' | 'X'
@@ -151,15 +154,46 @@ export const TOTAL_ENGAGEMENT = PLATFORM_ITEMS.reduce((sum, [, items]) => {
 }, 0)
 
 export const numberFormat = new Intl.NumberFormat('en-US')
+export const percentFormat = new Intl.NumberFormat('en-US', {
+  style: 'percent',
+  maximumFractionDigits: 0,
+})
+
+const FOCUS_MOTION = {
+  type: 'tween' as const,
+  duration: 160,
+  easing: 'ease-out' as const,
+}
 
 export function createDirectEngagementChart(mode: ColorMode) {
   const platforms = getPlatforms(mode)
   const engagementRows = platforms.flatMap((platform) => platform.reactions)
+  const platformRows = platforms.map((platform) => platform.reactions[0]!)
   const surface = SURFACE[mode]
+  const tones = PLATFORM_TONES[mode]
   const isLight = mode === 'light'
 
   return defineChart({
     marks: [
+      bandX(platformRows, {
+        id: 'platform-rails',
+        x: 'platform',
+        fill: (row: EngagementReaction) =>
+          withAlpha(tones[row.platform], isLight ? 0.07 : 0.1),
+        width: BAR_MAX_THICKNESS + 14,
+        radius: 16,
+      }),
+      whenFocused(
+        bandX(platformRows, {
+          id: 'platform-focus',
+          x: 'platform',
+          fill: (row: EngagementReaction) =>
+            withAlpha(tones[row.platform], isLight ? 0.12 : 0.18),
+          width: BAR_MAX_THICKNESS + 22,
+          radius: 18,
+        }),
+        { match: 'x' },
+      ),
       barY(engagementRows, {
         id: 'engagement-bars',
         x: 'platform',
@@ -167,11 +201,23 @@ export function createDirectEngagementChart(mode: ColorMode) {
         z: 'id',
         fill: (row) => row.color,
         stroke: surface,
-        strokeWidth: 1,
+        strokeWidth: BAR_GAP,
         key: 'id',
         inset: BAR_INSET,
         maxThickness: BAR_MAX_THICKNESS,
-        radius: 6,
+        radius: BAR_RADIUS,
+        states: [
+          {
+            when: { focus: 'unmatched' },
+            style: { opacity: 0.38 },
+            transition: FOCUS_MOTION,
+          },
+          {
+            when: { focus: 'primary' },
+            style: { opacity: 1 },
+            transition: FOCUS_MOTION,
+          },
+        ],
       }),
     ],
     x: {
@@ -191,26 +237,32 @@ export function createDirectEngagementChart(mode: ColorMode) {
       nice: true,
       grid: true,
       axis: {
+        line: true,
         ticks: {
+          size: 4,
           format: (value) => numberFormat.format(value),
         },
-        tickLabels: { fontSize: 12, opacity: 0.7 },
+        tickLabels: { fontSize: 11, opacity: 0.58, dx: -2 },
       },
     },
-    margin: { top: 132, right: 12, bottom: 40 },
+    margin: { top: 132, right: 12, bottom: 44 },
     clip: false,
     focus: 'group-x',
+    focusRing: false,
     tooltip: {
       use: tooltip,
       portal,
       className: 'engagement-tooltip',
+      anchor: 'group-center',
+      placement: ['right', 'left', 'top', 'bottom'],
+      offset: 16,
     },
     theme: {
       foreground: isLight ? '#334155' : '#e5e7eb',
       muted: isLight ? '#64748b' : '#94a3b8',
       grid: isLight
-        ? 'color-mix(in srgb, #0f172a 8%, transparent)'
-        : 'color-mix(in srgb, #e5e7eb 10%, transparent)',
+        ? 'color-mix(in srgb, #0f172a 6%, transparent)'
+        : 'color-mix(in srgb, #e5e7eb 8%, transparent)',
       background: 'transparent',
     },
   })

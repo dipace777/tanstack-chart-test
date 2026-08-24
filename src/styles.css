@@ -19,10 +19,10 @@ body,
   --text-strong: #f8fafc;
   --muted: #94a3b8;
   --border: color-mix(in srgb, white 8%, transparent);
-  --bubble: color-mix(in srgb, #0b1220 92%, white 8%);
-  --bubble-ring: color-mix(in srgb, #0b1220 70%, transparent);
-  --shadow: color-mix(in srgb, black 40%, transparent);
-  --chip: color-mix(in srgb, #f8fafc 88%, transparent);
+  --bubble: color-mix(in srgb, #0b1220 86%, white 14%);
+  --bubble-ring: color-mix(in srgb, #0b1220 58%, transparent);
+  --shadow: color-mix(in srgb, black 42%, transparent);
+  --chip: #f8fafc;
   --tooltip: #101828;
 }
 
@@ -35,7 +35,7 @@ body,
   --muted: #64748b;
   --border: color-mix(in srgb, #0f172a 10%, transparent);
   --bubble: #ffffff;
-  --bubble-ring: color-mix(in srgb, #eef1f6 80%, white);
+  --bubble-ring: color-mix(in srgb, #eef1f6 72%, white);
   --shadow: color-mix(in srgb, #0f172a 12%, transparent);
   --chip: #f8fafc;
   --tooltip: #ffffff;
@@ -63,7 +63,7 @@ body {
 
 .engagement-card {
   width: min(100%, 1080px);
-  padding: 28px 28px 24px;
+  padding: 28px 28px 18px;
   border: 1px solid var(--border);
   border-radius: 24px;
   background: var(--card);
@@ -86,13 +86,16 @@ body {
 .theme-toggle button {
   appearance: none;
   margin: 0;
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
   border: 0;
   border-radius: 999px;
   background: transparent;
   color: var(--muted);
   font: inherit;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -102,6 +105,11 @@ body {
 .theme-toggle button.is-active {
   background: color-mix(in srgb, var(--text) 10%, transparent);
   color: var(--text-strong);
+}
+
+.theme-toggle button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text-strong) 55%, transparent);
+  outline-offset: 2px;
 }
 
 .engagement-chart-frame {
@@ -117,12 +125,20 @@ body {
   color: var(--muted);
   pointer-events: none;
   z-index: 0;
-  opacity: 0.55;
+  opacity: 0.5;
+}
+
+.engagement-connectors path {
+  transition: opacity 180ms ease;
+}
+
+.engagement-connectors path.is-muted {
+  opacity: 0.28;
 }
 
 .engagement-total-bubble {
   position: absolute;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   justify-items: center;
   gap: 4px;
@@ -144,12 +160,14 @@ body {
 
 .engagement-total-bubble .engagement-total {
   font-size: 40px;
+  font-variant-numeric: tabular-nums;
 }
 
 .engagement-kicker,
 .engagement-tooltip-kicker,
 .engagement-axis-label,
-.engagement-badge span {
+.engagement-badge span,
+.engagement-hint {
   margin: 0;
   color: var(--muted);
   font-size: 12px;
@@ -173,10 +191,16 @@ body {
 .engagement-chart {
   width: 100%;
   color: var(--text);
+  cursor: pointer;
 }
 
 .engagement-chart .ts-chart {
   overflow: visible;
+}
+
+.engagement-overlay,
+.engagement-axis-label {
+  transition: opacity 180ms ease;
 }
 
 .engagement-overlay {
@@ -186,6 +210,11 @@ body {
   pointer-events: none;
 }
 
+.engagement-overlay.is-muted,
+.engagement-axis-label.is-muted {
+  opacity: 0.34;
+}
+
 .engagement-badge {
   position: absolute;
   left: 50%;
@@ -193,11 +222,19 @@ body {
   display: grid;
   justify-items: center;
   transform: translateX(-50%);
-  padding: 6px 10px;
+  padding: 6px 11px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--bubble);
   box-shadow: 0 8px 24px var(--shadow);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.engagement-overlay.is-active .engagement-badge {
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 12px 28px var(--shadow);
 }
 
 .engagement-badge strong {
@@ -206,6 +243,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
 .engagement-chips {
@@ -225,9 +263,15 @@ body {
   justify-content: center;
   gap: 6px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: 0.01em;
   color: var(--chip);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 1px 2px color-mix(in srgb, black 38%, transparent);
+}
+
+.engagement-chip.is-compact {
+  font-size: 12px;
 }
 
 .engagement-axis-label {
@@ -243,16 +287,27 @@ body {
   pointer-events: none;
 }
 
+.engagement-axis-label.is-active {
+  color: var(--text-strong);
+}
+
 .engagement-axis-dot {
   width: 8px;
   height: 8px;
   border-radius: 999px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.engagement-hint {
+  margin: 8px 0 0;
+  text-align: center;
+  letter-spacing: 0.06em;
 }
 
 .engagement-tooltip-body {
   display: grid;
   gap: 8px;
-  min-width: 198px;
+  min-width: 220px;
 }
 
 .engagement-tooltip-kicker {
@@ -262,13 +317,22 @@ body {
 .engagement-tooltip-total {
   margin: 0;
   color: var(--text-strong);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.engagement-tooltip-total span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .engagement-tooltip-list {
   display: grid;
-  gap: 6px;
+  gap: 2px;
   margin: 0;
   padding: 8px 0 0;
   border-top: 1px solid var(--border);
@@ -277,9 +341,11 @@ body {
 
 .engagement-tooltip-list li {
   display: grid;
-  grid-template-columns: 8px 18px 1fr auto;
+  grid-template-columns: 8px 18px 1fr auto auto;
   align-items: center;
   gap: 8px;
+  padding: 5px 6px;
+  border-radius: 8px;
   color: var(--text);
   font-size: 13px;
 }
@@ -287,6 +353,7 @@ body {
 .engagement-tooltip-list li.is-active {
   color: var(--text-strong);
   font-weight: 650;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
 }
 
 .engagement-tooltip-swatch {
@@ -295,8 +362,16 @@ body {
   border-radius: 999px;
 }
 
-.engagement-tooltip-count {
+.engagement-tooltip-count,
+.engagement-tooltip-share {
   font-variant-numeric: tabular-nums;
+}
+
+.engagement-tooltip-share {
+  color: var(--muted);
+  font-size: 11px;
+  min-width: 2.6em;
+  text-align: right;
 }
 
 .ts-chart-tooltip.engagement-tooltip {
@@ -307,11 +382,35 @@ body {
   --ts-chart-tooltip-border-radius: 16px;
   --ts-chart-tooltip-shadow: 0 18px 48px var(--shadow);
   --ts-chart-tooltip-padding: 12px;
-  --ts-chart-tooltip-max-width: 260px;
+  --ts-chart-tooltip-max-width: 280px;
 }
 
 @media (max-width: 800px) {
   .engagement-card {
-    padding: 20px 16px 16px;
+    padding: 20px 16px 12px;
+  }
+
+  .engagement-total-bubble {
+    min-width: 220px;
+    padding: 14px 24px 12px;
+  }
+
+  .engagement-total-bubble .engagement-total {
+    font-size: 32px;
+  }
+
+  .engagement-chip:not(.is-compact) {
+    font-size: 10px;
+    gap: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .engagement-overlay,
+  .engagement-axis-label,
+  .engagement-badge,
+  .engagement-connectors path,
+  body {
+    transition: none;
   }
 }
