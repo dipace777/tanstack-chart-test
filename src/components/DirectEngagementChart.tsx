@@ -161,7 +161,7 @@ export function DirectEngagementChart() {
           {numberFormat.format(TOTAL_ENGAGEMENT)}
         </h1>
         <p className="engagement-subtitle">
-          Reactions, comments, and shares across Facebook, Instagram, and X
+          Reactions, comments, and shares across Facebook, Instagram, LinkedIn, and X
         </p>
       </header>
 
@@ -202,7 +202,6 @@ export function DirectEngagementChart() {
                     style={{
                       top: segment.top - anchor.top,
                       height: segment.height,
-                      color: segment.row.ink,
                     }}
                   >
                     <span aria-hidden="true">{segment.row.icon}</span>

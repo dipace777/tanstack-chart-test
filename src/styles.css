@@ -28,7 +28,7 @@ body {
 }
 
 .engagement-card {
-  width: min(100%, 980px);
+  width: min(100%, 1080px);
   padding: 28px 28px 24px;
   border: 1px solid color-mix(in srgb, white 8%, transparent);
   border-radius: 24px;
@@ -100,7 +100,7 @@ body {
 
 .engagement-overlay {
   position: absolute;
-  z-index: 2;
+  z-index: 1;
   transform: translateX(-50%);
   pointer-events: none;
 }
@@ -143,8 +143,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: color-mix(in srgb, #f8fafc 88%, transparent);
 }
 
 .engagement-axis-label {
@@ -214,6 +216,10 @@ body {
 
 .engagement-tooltip-count {
   font-variant-numeric: tabular-nums;
+}
+
+.ts-chart-tooltip.engagement-tooltip {
+  z-index: 50 !important;
 }
 
 @media (max-width: 800px) {

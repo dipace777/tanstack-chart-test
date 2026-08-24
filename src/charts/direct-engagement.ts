@@ -2,13 +2,14 @@ import { barY, defineChart } from '@tanstack/charts'
 import { scaleBand } from '@tanstack/charts/scales/band'
 import { scaleLinear } from '@tanstack/charts/scales/linear'
 import { tooltip } from '@tanstack/charts/tooltip'
+import { portal } from '@tanstack/charts/tooltip/portal'
 
 export const BAR_INSET = 10
-export const BAR_MAX_THICKNESS = 92
+export const BAR_MAX_THICKNESS = 78
 export const CHART_HEIGHT = 520
-export const CHART_INITIAL_WIDTH = 880
+export const CHART_INITIAL_WIDTH = 960
 
-export type PlatformName = 'Facebook' | 'Instagram' | 'X'
+export type PlatformName = 'Facebook' | 'Instagram' | 'LinkedIn' | 'X'
 
 export interface EngagementReaction {
   id: string
@@ -27,15 +28,29 @@ export interface PlatformEngagement {
   reactions: readonly EngagementReaction[]
 }
 
+const PLATFORM_TONES = {
+  Facebook: '#6F8FCE',
+  Instagram: '#C47A93',
+  LinkedIn: '#5B8AA8',
+  X: '#9AA3B2',
+} as const
+
+function withAlpha(hex: string, alpha: number) {
+  const channel = Math.round(alpha * 255)
+    .toString(16)
+    .padStart(2, '0')
+  return `${hex}${channel}`
+}
+
 function reaction(
   platform: PlatformName,
   kind: string,
   label: string,
   icon: string,
   count: number,
-  color: string,
-  ink = '#ffffff',
+  tone: number,
 ): EngagementReaction {
+  const accent = PLATFORM_TONES[platform]
   return {
     id: `${platform}-${kind}`,
     platform,
@@ -43,47 +58,66 @@ function reaction(
     label,
     icon,
     count,
-    color,
-    ink,
+    color: withAlpha(accent, tone),
+    ink: '#f8fafc',
+  }
+}
+
+function stackTones(count: number) {
+  return Array.from({ length: count }, (_, index) => {
+    const t = count === 1 ? 0 : index / (count - 1)
+    return 0.92 - t * 0.5
+  })
+}
+
+function platformStack(
+  platform: PlatformName,
+  items: readonly (readonly [string, string, string, number])[],
+): PlatformEngagement {
+  const tones = stackTones(items.length)
+  return {
+    platform,
+    accent: PLATFORM_TONES[platform],
+    reactions: items.map(([kind, label, icon, count], index) =>
+      reaction(platform, kind, label, icon, count, tones[index] ?? 0.7),
+    ),
   }
 }
 
 export const platforms: readonly PlatformEngagement[] = [
-  {
-    platform: 'Facebook',
-    accent: '#0866FF',
-    reactions: [
-      reaction('Facebook', 'like', 'Like', '👍', 100, '#0866FF'),
-      reaction('Facebook', 'love', 'Love', '❤️', 200, '#F33E58'),
-      reaction('Facebook', 'care', 'Care', '🤗', 38, '#F7B125', '#111827'),
-      reaction('Facebook', 'haha', 'Haha', '😂', 52, '#F4C430', '#111827'),
-      reaction('Facebook', 'wow', 'Wow', '😮', 34, '#A78BFA'),
-      reaction('Facebook', 'sad', 'Sad', '😢', 24, '#60A5FA', '#111827'),
-      reaction('Facebook', 'angry', 'Angry', '😡', 32, '#E9710F'),
-      reaction('Facebook', 'comment', 'Comments', '💬', 20, '#64748B'),
-    ],
-  },
-  {
-    platform: 'Instagram',
-    accent: '#E1306C',
-    reactions: [
-      reaction('Instagram', 'like', 'Likes', '❤️', 74, '#E1306C'),
-      reaction('Instagram', 'comment', 'Comments', '💬', 26, '#833AB4'),
-      reaction('Instagram', 'share', 'Shares', '📤', 13, '#FCAF45', '#111827'),
-      reaction('Instagram', 'save', 'Saves', '🔖', 7, '#405DE6'),
-    ],
-  },
-  {
-    platform: 'X',
-    accent: '#E7E9EA',
-    reactions: [
-      reaction('X', 'like', 'Likes', '❤️', 248, '#F91880'),
-      reaction('X', 'repost', 'Reposts', '🔁', 156, '#00BA7C'),
-      reaction('X', 'reply', 'Replies', '💬', 102, '#1D9BF0'),
-      reaction('X', 'quote', 'Quotes', '📝', 64, '#7856FF'),
-      reaction('X', 'bookmark', 'Bookmarks', '🔖', 40, '#FFD400', '#111827'),
-    ],
-  },
+  platformStack('Facebook', [
+    ['like', 'Like', '👍', 100],
+    ['love', 'Love', '❤️', 200],
+    ['care', 'Care', '🤗', 38],
+    ['haha', 'Haha', '😂', 52],
+    ['wow', 'Wow', '😮', 34],
+    ['sad', 'Sad', '😢', 24],
+    ['angry', 'Angry', '😡', 32],
+    ['comment', 'Comments', '💬', 20],
+  ]),
+  platformStack('Instagram', [
+    ['like', 'Likes', '❤️', 74],
+    ['comment', 'Comments', '💬', 26],
+    ['share', 'Shares', '📤', 13],
+    ['save', 'Saves', '🔖', 7],
+  ]),
+  platformStack('LinkedIn', [
+    ['like', 'Like', '👍', 110],
+    ['celebrate', 'Celebrate', '👏', 48],
+    ['insightful', 'Insightful', '💡', 52],
+    ['support', 'Support', '🤗', 28],
+    ['love', 'Love', '❤️', 22],
+    ['funny', 'Funny', '😂', 18],
+    ['comment', 'Comments', '💬', 36],
+    ['repost', 'Reposts', '🔁', 26],
+  ]),
+  platformStack('X', [
+    ['like', 'Likes', '❤️', 248],
+    ['repost', 'Reposts', '🔁', 156],
+    ['reply', 'Replies', '💬', 102],
+    ['quote', 'Quotes', '📝', 64],
+    ['bookmark', 'Bookmarks', '🔖', 40],
+  ]),
 ]
 
 export const engagementRows: readonly EngagementReaction[] = platforms.flatMap(
@@ -109,18 +143,20 @@ export const directEngagementChart = defineChart({
       y: 'count',
       z: 'id',
       fill: (row) => row.color,
+      stroke: '#0b1220',
+      strokeWidth: 1,
       key: 'id',
       inset: BAR_INSET,
       maxThickness: BAR_MAX_THICKNESS,
-      radius: 4,
+      radius: 6,
     }),
   ],
   x: {
     scale: () =>
       scaleBand<string>()
         .domain(platforms.map((row) => row.platform))
-        .paddingInner(0.32)
-        .paddingOuter(0.16),
+        .paddingInner(0.28)
+        .paddingOuter(0.12),
     axis: {
       line: false,
       ticks: { size: 0 },
@@ -143,6 +179,7 @@ export const directEngagementChart = defineChart({
   focus: 'group-x',
   tooltip: {
     use: tooltip,
+    portal,
     className: 'engagement-tooltip',
   },
   theme: {
