@@ -44,7 +44,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     [mode, setColorMode],
   )
 
-  return createElement(ColorModeContext.Provider, { value }, children)
+  return createElement(
+    ColorModeContext.Provider,
+    { value },
+    createElement('div', { className: 'app-shell' }, children),
+  )
 }
 
 export function useColorMode() {

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chart } from "@tanstack/charts/react/tooltip";
 import type { ChartRenderContext } from "@tanstack/charts";
 import {
@@ -213,6 +213,24 @@ export function DirectEngagementChart() {
       .join(", ");
   }, [platforms]);
 
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [chartHeight, setChartHeight] = useState(CHART_HEIGHT);
+
+  useEffect(() => {
+    const node = frameRef.current;
+    if (!node) return;
+
+    const syncHeight = () => {
+      const next = Math.round(node.clientHeight);
+      if (next > 0) setChartHeight(next);
+    };
+
+    syncHeight();
+    const observer = new ResizeObserver(syncHeight);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   const anchors = layout?.anchors ?? [];
   const bubbleX = layout ? layout.plotX + layout.plotWidth / 2 : 0;
   const bubbleTop = 18;
@@ -220,10 +238,10 @@ export function DirectEngagementChart() {
 
   return (
     <section className="engagement-card">
-      <div className="engagement-chart-frame">
+      <div className="engagement-chart-frame" ref={frameRef}>
         <Chart
           definition={definition}
-          height={CHART_HEIGHT}
+          height={chartHeight}
           initialWidth={CHART_INITIAL_WIDTH}
           className="engagement-chart"
           ariaLabel="Direct engagement by platform and reaction type"

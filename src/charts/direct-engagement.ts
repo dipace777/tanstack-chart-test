@@ -167,6 +167,14 @@ const PLATFORM_ITEMS = [
   ],
 ] as const
 
+export const PLATFORM_NAMES = PLATFORM_ITEMS.map(
+  ([platform]) => platform,
+) as readonly PlatformName[]
+
+export function getPlatformAccent(mode: ColorMode, platform: PlatformName) {
+  return PLATFORM_TONES[mode][platform]
+}
+
 export function getPlatforms(mode: ColorMode) {
   return PLATFORM_ITEMS.map(([platform, items]) =>
     platformStack(mode, platform, items),

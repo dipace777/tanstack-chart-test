@@ -5,9 +5,13 @@
 }
 
 html,
-body,
+body {
+  height: 100dvh;
+  overflow: hidden;
+}
+
 #app {
-  min-height: 100%;
+  height: 100%;
 }
 
 :root,
@@ -53,21 +57,46 @@ body {
     color 180ms ease;
 }
 
-.engagement-page {
-  min-height: 100vh;
+.app-shell {
+  height: 100dvh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 72px 20px 32px;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.engagement-card {
-  width: 40vw;
-  padding: 28px 28px 18px;
+.analytics-page {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 20px;
+  padding: 72px 24px 24px;
+  overflow: hidden;
+}
+
+.engagement-card,
+.activity-card {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 22px 22px 16px;
   border: 1px solid var(--border);
   border-radius: 24px;
   background: var(--card);
   box-shadow: 0 24px 80px var(--shadow);
+  overflow: hidden;
+}
+
+.engagement-card,
+.activity-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.activity-card {
+  gap: 14px;
 }
 
 .theme-toggle {
@@ -114,7 +143,9 @@ body {
 
 .engagement-chart-frame {
   position: relative;
-  overflow: visible;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .engagement-connectors {
@@ -190,12 +221,13 @@ body {
 
 .engagement-chart {
   width: 100%;
+  height: 100%;
   color: var(--text);
   cursor: pointer;
 }
 
 .engagement-chart .ts-chart {
-  overflow: visible;
+  overflow: hidden;
 }
 
 .engagement-overlay,
@@ -304,6 +336,221 @@ body {
   letter-spacing: 0.06em;
 }
 
+.activity-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.activity-title {
+  margin: 2px 0 0;
+  color: var(--text-strong);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.activity-count {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-filters {
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.activity-filters::-webkit-scrollbar {
+  display: none;
+}
+
+.activity-filters button {
+  appearance: none;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 6px 11px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.activity-filters button.is-active {
+  color: var(--text-strong);
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  border-color: color-mix(in srgb, var(--text) 16%, transparent);
+}
+
+.activity-filters button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--text-strong) 55%, transparent);
+  outline-offset: 2px;
+}
+
+.activity-scroller {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.activity-list {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  height: 100%;
+  margin: 0;
+  padding: 4px 6px 20px 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--muted) 42%, transparent) transparent;
+}
+
+.activity-list::-webkit-scrollbar {
+  width: 10px;
+}
+
+.activity-list::-webkit-scrollbar-track {
+  margin: 8px 0;
+  background: transparent;
+}
+
+.activity-list::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 42%, transparent);
+  background-clip: padding-box;
+}
+
+.activity-list::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--muted) 68%, transparent);
+  background-clip: padding-box;
+}
+
+.activity-fade {
+  position: absolute;
+  right: 10px;
+  left: 0;
+  height: 40px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+  z-index: 2;
+}
+
+.activity-fade.is-visible {
+  opacity: 1;
+}
+
+.activity-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, var(--card) 10%, transparent);
+}
+
+.activity-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, var(--card) 18%, transparent);
+}
+
+.activity-item {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px 10px;
+  border-radius: 16px;
+}
+
+.activity-item + .activity-item {
+  box-shadow: 0 -1px 0 var(--border);
+}
+
+.activity-item:hover {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+.activity-avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.activity-body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.activity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.activity-meta strong {
+  color: var(--text-strong);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.activity-handle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-meta time {
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.activity-body > p {
+  margin: 0;
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.activity-context {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.activity-empty {
+  margin: auto 0;
+  color: var(--muted);
+  text-align: center;
+}
+
 .engagement-tooltip-body {
   display: grid;
   gap: 8px;
@@ -385,10 +632,17 @@ body {
   --ts-chart-tooltip-max-width: 280px;
 }
 
-@media (max-width: 800px) {
-  .engagement-card {
-    width: 100%;
-    padding: 20px 16px 12px;
+@media (max-width: 1100px) {
+  .analytics-page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    padding: 68px 14px 14px;
+    gap: 14px;
+  }
+
+  .engagement-card,
+  .activity-card {
+    padding: 16px 14px 12px;
   }
 
   .engagement-total-bubble {
