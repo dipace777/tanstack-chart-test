@@ -3,6 +3,8 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
+import { ThemeProvider, themeBootScript } from '#/theme'
+import { ThemeToggle } from '#/components/ThemeToggle'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -43,12 +45,16 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>
       <body>
-        {children}
+        <ThemeProvider>
+          <ThemeToggle />
+          {children}
+        </ThemeProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',

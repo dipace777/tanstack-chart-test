@@ -7,13 +7,14 @@ import {
   CHART_HEIGHT,
   CHART_INITIAL_WIDTH,
   TOTAL_ENGAGEMENT,
-  directEngagementChart,
+  createDirectEngagementChart,
+  getPlatforms,
   numberFormat,
   platformTotal,
-  platforms,
   type EngagementReaction,
   type PlatformName,
 } from '#/charts/direct-engagement'
+import { useColorMode } from '#/theme'
 
 interface BarAnchor {
   platform: PlatformName
@@ -47,6 +48,7 @@ function paintedBarWidth(bandwidth: number) {
 
 function readLayout(
   context: ChartRenderContext<EngagementReaction, string, number>,
+  platforms: readonly ReturnType<typeof getPlatforms>[number][],
 ): OverlayLayout | null {
   const x = context.scene.scales.x
   const y = context.scene.scales.y
@@ -108,6 +110,7 @@ function sameAnchors(left: readonly BarAnchor[], right: readonly BarAnchor[]) {
     return (
       other !== undefined &&
       anchor.platform === other.platform &&
+      anchor.accent === other.accent &&
       Math.round(anchor.centerX) === Math.round(other.centerX) &&
       Math.round(anchor.top) === Math.round(other.top) &&
       Math.round(anchor.width) === Math.round(other.width)
@@ -117,8 +120,10 @@ function sameAnchors(left: readonly BarAnchor[], right: readonly BarAnchor[]) {
 
 function EngagementTooltip({
   points,
+  platforms,
 }: {
   points: readonly { datum: EngagementReaction }[]
+  platforms: readonly ReturnType<typeof getPlatforms>[number][]
 }) {
   const focused = points[0]?.datum
   if (!focused) return null
@@ -154,18 +159,21 @@ function EngagementTooltip({
 }
 
 export function DirectEngagementChart() {
+  const { mode } = useColorMode()
+  const platforms = useMemo(() => getPlatforms(mode), [mode])
+  const definition = useMemo(() => createDirectEngagementChart(mode), [mode])
   const [layout, setLayout] = useState<OverlayLayout | null>(null)
   const layoutRef = useRef(layout)
   layoutRef.current = layout
 
   const onRender = useCallback(
     (context: ChartRenderContext<EngagementReaction, string, number>) => {
-      const next = readLayout(context)
+      const next = readLayout(context, platforms)
       if (!next) return
       if (sameLayout(layoutRef.current, next)) return
       setLayout(next)
     },
-    [],
+    [platforms],
   )
 
   const description = useMemo(() => {
@@ -175,7 +183,7 @@ export function DirectEngagementChart() {
           `${platform.platform} ${numberFormat.format(platformTotal(platform))}`,
       )
       .join(', ')
-  }, [])
+  }, [platforms])
 
   const anchors = layout?.anchors ?? []
   const bubbleX = layout ? layout.plotX + layout.plotWidth / 2 : 0
@@ -186,14 +194,16 @@ export function DirectEngagementChart() {
     <section className="engagement-card">
       <div className="engagement-chart-frame">
         <Chart
-          definition={directEngagementChart}
+          definition={definition}
           height={CHART_HEIGHT}
           initialWidth={CHART_INITIAL_WIDTH}
           className="engagement-chart"
           ariaLabel="Direct engagement by platform and reaction type"
           ariaDescription={description}
           onRender={onRender}
-          renderTooltipBody={({ points }) => <EngagementTooltip points={points} />}
+          renderTooltipBody={({ points }) => (
+            <EngagementTooltip points={points} platforms={platforms} />
+          )}
         />
 
         {layout ? (
@@ -205,8 +215,7 @@ export function DirectEngagementChart() {
                 y1={bubbleBottom}
                 x2={anchor.centerX}
                 y2={anchor.top - 8}
-                stroke="#64748b"
-                strokeOpacity="0.45"
+                stroke="currentColor"
                 strokeWidth="1.25"
               />
             ))}

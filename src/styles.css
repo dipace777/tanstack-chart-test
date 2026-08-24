@@ -10,13 +10,47 @@ body,
   min-height: 100%;
 }
 
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #070b14;
+  --card: #0b1220;
+  --text: #e5e7eb;
+  --text-strong: #f8fafc;
+  --muted: #94a3b8;
+  --border: color-mix(in srgb, white 8%, transparent);
+  --bubble: color-mix(in srgb, #0b1220 92%, white 8%);
+  --bubble-ring: color-mix(in srgb, #0b1220 70%, transparent);
+  --shadow: color-mix(in srgb, black 40%, transparent);
+  --chip: color-mix(in srgb, #f8fafc 88%, transparent);
+  --tooltip: #101828;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --page: #eef1f6;
+  --card: #ffffff;
+  --text: #334155;
+  --text-strong: #0f172a;
+  --muted: #64748b;
+  --border: color-mix(in srgb, #0f172a 10%, transparent);
+  --bubble: #ffffff;
+  --bubble-ring: color-mix(in srgb, #eef1f6 80%, white);
+  --shadow: color-mix(in srgb, #0f172a 12%, transparent);
+  --chip: #f8fafc;
+  --tooltip: #ffffff;
+}
+
 body {
   margin: 0;
-  background: #070b14;
-  color: #e5e7eb;
+  background: var(--page);
+  color: var(--text);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
 }
 
 .engagement-page {
@@ -24,18 +58,50 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 20px;
+  padding: 72px 20px 32px;
 }
 
 .engagement-card {
   width: min(100%, 1080px);
   padding: 28px 28px 24px;
-  border: 1px solid color-mix(in srgb, white 8%, transparent);
+  border: 1px solid var(--border);
   border-radius: 24px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, white 4%, transparent), transparent 28%),
-    #0b1220;
-  box-shadow: 0 24px 80px color-mix(in srgb, black 45%, transparent);
+  background: var(--card);
+  box-shadow: 0 24px 80px var(--shadow);
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 40;
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: 0 10px 30px var(--shadow);
+}
+
+.theme-toggle button {
+  appearance: none;
+  margin: 0;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.theme-toggle button.is-active {
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--text-strong);
 }
 
 .engagement-chart-frame {
@@ -48,8 +114,10 @@ body {
   inset: 0;
   width: 100%;
   height: 100%;
+  color: var(--muted);
   pointer-events: none;
   z-index: 0;
+  opacity: 0.55;
 }
 
 .engagement-total-bubble {
@@ -60,18 +128,18 @@ body {
   gap: 4px;
   min-width: 280px;
   padding: 18px 40px 16px;
-  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: color-mix(in srgb, #0b1220 92%, white 8%);
+  background: var(--bubble);
   box-shadow:
-    0 0 0 8px color-mix(in srgb, #0b1220 70%, transparent),
-    0 18px 40px color-mix(in srgb, black 32%, transparent);
+    0 0 0 8px var(--bubble-ring),
+    0 18px 40px var(--shadow);
   transform: translateX(-50%);
   pointer-events: none;
 }
 
 .engagement-total-bubble .engagement-kicker {
-  color: #94a3b8;
+  color: var(--muted);
 }
 
 .engagement-total-bubble .engagement-total {
@@ -83,7 +151,7 @@ body {
 .engagement-axis-label,
 .engagement-badge span {
   margin: 0;
-  color: #94a3b8;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -92,7 +160,7 @@ body {
 
 .engagement-total {
   margin: 0;
-  color: #f8fafc;
+  color: var(--text-strong);
   font-weight: 700;
   letter-spacing: -0.04em;
   line-height: 1.1;
@@ -104,14 +172,7 @@ body {
 
 .engagement-chart {
   width: 100%;
-  color: #e5e7eb;
-  --ts-chart-tooltip-background: #101828;
-  --ts-chart-tooltip-color: #e5e7eb;
-  --ts-chart-tooltip-border: 1px solid color-mix(in srgb, white 12%, transparent);
-  --ts-chart-tooltip-border-radius: 16px;
-  --ts-chart-tooltip-shadow: 0 18px 48px color-mix(in srgb, black 42%, transparent);
-  --ts-chart-tooltip-padding: 12px;
-  --ts-chart-tooltip-max-width: 260px;
+  color: var(--text);
 }
 
 .engagement-chart .ts-chart {
@@ -133,14 +194,14 @@ body {
   justify-items: center;
   transform: translateX(-50%);
   padding: 6px 10px;
-  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  background: color-mix(in srgb, #0b1220 88%, white 6%);
-  box-shadow: 0 8px 24px color-mix(in srgb, black 28%, transparent);
+  background: var(--bubble);
+  box-shadow: 0 8px 24px var(--shadow);
 }
 
 .engagement-badge strong {
-  color: #f8fafc;
+  color: var(--text-strong);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -166,7 +227,7 @@ body {
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.01em;
-  color: color-mix(in srgb, #f8fafc 88%, transparent);
+  color: var(--chip);
 }
 
 .engagement-axis-label {
@@ -175,7 +236,7 @@ body {
   align-items: center;
   gap: 8px;
   transform: translateX(-50%);
-  color: #e5e7eb;
+  color: var(--text);
   font-size: 13px;
   letter-spacing: 0;
   text-transform: none;
@@ -195,12 +256,12 @@ body {
 }
 
 .engagement-tooltip-kicker {
-  color: #94a3b8;
+  color: var(--muted);
 }
 
 .engagement-tooltip-total {
   margin: 0;
-  color: #f8fafc;
+  color: var(--text-strong);
   font-size: 15px;
   font-weight: 700;
 }
@@ -210,7 +271,7 @@ body {
   gap: 6px;
   margin: 0;
   padding: 8px 0 0;
-  border-top: 1px solid color-mix(in srgb, white 10%, transparent);
+  border-top: 1px solid var(--border);
   list-style: none;
 }
 
@@ -219,12 +280,12 @@ body {
   grid-template-columns: 8px 18px 1fr auto;
   align-items: center;
   gap: 8px;
-  color: #cbd5e1;
+  color: var(--text);
   font-size: 13px;
 }
 
 .engagement-tooltip-list li.is-active {
-  color: #f8fafc;
+  color: var(--text-strong);
   font-weight: 650;
 }
 
@@ -240,6 +301,13 @@ body {
 
 .ts-chart-tooltip.engagement-tooltip {
   z-index: 50 !important;
+  --ts-chart-tooltip-background: var(--tooltip);
+  --ts-chart-tooltip-color: var(--text);
+  --ts-chart-tooltip-border: 1px solid var(--border);
+  --ts-chart-tooltip-border-radius: 16px;
+  --ts-chart-tooltip-shadow: 0 18px 48px var(--shadow);
+  --ts-chart-tooltip-padding: 12px;
+  --ts-chart-tooltip-max-width: 260px;
 }
 
 @media (max-width: 800px) {
